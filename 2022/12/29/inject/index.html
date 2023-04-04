@@ -1,0 +1,654 @@
+
+
+<!DOCTYPE html>
+<html lang="zh-CN" data-default-color-scheme=auto>
+
+
+
+<head>
+  <meta charset="UTF-8">
+  <link rel="apple-touch-icon" sizes="76x76" href="/img/fluid.png">
+  <link rel="icon" href="/img/fluid.png">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=5.0, shrink-to-fit=no">
+  <meta http-equiv="x-ua-compatible" content="ie=edge">
+  
+  <meta name="theme-color" content="#2f4154">
+  <meta name="author" content="Ju Huang">
+  <meta name="keywords" content="">
+  
+    <meta name="description" content="前言:​		sql注入是常见的安全缺陷类型之一,在OWASP基金会的历年安全缺陷TOP 10报告披露的安全缺陷类型中占据前列。 概念:​      sql注入是由于服务器未对用户输入的数据进行过滤,或过滤不严格,导致用户输入直接拼接到数据库查询语句中,作为sql语句查询操作的一部分带入执行,从而实现非法操作。 ​		攻击者通过构建特定的数据库查询语句,通过页面响应结果来逐步获取想要得到的信息,进一">
+<meta property="og:type" content="article">
+<meta property="og:title" content="sql注入浅析">
+<meta property="og:url" content="http://example.com/2022/12/29/inject/index.html">
+<meta property="og:site_name" content="Ju_Huang">
+<meta property="og:description" content="前言:​		sql注入是常见的安全缺陷类型之一,在OWASP基金会的历年安全缺陷TOP 10报告披露的安全缺陷类型中占据前列。 概念:​      sql注入是由于服务器未对用户输入的数据进行过滤,或过滤不严格,导致用户输入直接拼接到数据库查询语句中,作为sql语句查询操作的一部分带入执行,从而实现非法操作。 ​		攻击者通过构建特定的数据库查询语句,通过页面响应结果来逐步获取想要得到的信息,进一">
+<meta property="og:locale" content="zh_CN">
+<meta property="og:image" content="http://example.com/img/inject.png">
+<meta property="article:published_time" content="2022-12-29T09:05:00.000Z">
+<meta property="article:modified_time" content="2023-04-04T09:31:58.532Z">
+<meta property="article:author" content="Ju Huang">
+<meta property="article:tag" content="SQL注入相关">
+<meta name="twitter:card" content="summary_large_image">
+<meta name="twitter:image" content="http://example.com/img/inject.png">
+  
+  
+  
+  <title>sql注入浅析 - Ju_Huang</title>
+
+  <link  rel="stylesheet" href="https://lib.baomitu.com/twitter-bootstrap/4.6.1/css/bootstrap.min.css" />
+
+
+
+  <link  rel="stylesheet" href="https://lib.baomitu.com/github-markdown-css/4.0.0/github-markdown.min.css" />
+
+  <link  rel="stylesheet" href="https://lib.baomitu.com/hint.css/2.7.0/hint.min.css" />
+
+  <link  rel="stylesheet" href="https://lib.baomitu.com/fancybox/3.5.7/jquery.fancybox.min.css" />
+
+
+
+<!-- 主题依赖的图标库，不要自行修改 -->
+<!-- Do not modify the link that theme dependent icons -->
+
+<link rel="stylesheet" href="//at.alicdn.com/t/font_1749284_hj8rtnfg7um.css">
+
+
+
+<link rel="stylesheet" href="//at.alicdn.com/t/font_1736178_lbnruvf0jn.css">
+
+
+<link  rel="stylesheet" href="/css/main.css" />
+
+
+  <link id="highlight-css" rel="stylesheet" href="/css/highlight.css" />
+  
+    <link id="highlight-css-dark" rel="stylesheet" href="/css/highlight-dark.css" />
+  
+
+
+
+
+  <script id="fluid-configs">
+    var Fluid = window.Fluid || {};
+    Fluid.ctx = Object.assign({}, Fluid.ctx)
+    var CONFIG = {"hostname":"example.com","root":"/","version":"1.9.4","typing":{"enable":true,"typeSpeed":70,"cursorChar":"_","loop":false,"scope":[]},"anchorjs":{"enable":true,"element":"h1,h2,h3,h4,h5,h6","placement":"left","visible":"hover","icon":""},"progressbar":{"enable":true,"height_px":3,"color":"#29d","options":{"showSpinner":false,"trickleSpeed":100}},"code_language":{"enable":true,"default":"TEXT"},"copy_btn":true,"image_caption":{"enable":true},"image_zoom":{"enable":true,"img_url_replace":["",""]},"toc":{"enable":true,"placement":"right","headingSelector":"h1,h2,h3,h4,h5,h6","collapseDepth":0},"lazyload":{"enable":true,"loading_img":"/img/loading.gif","onlypost":false,"offset_factor":2},"web_analytics":{"enable":false,"follow_dnt":true,"baidu":null,"google":null,"gtag":null,"tencent":{"sid":null,"cid":null},"woyaola":null,"cnzz":null,"leancloud":{"app_id":null,"app_key":null,"server_url":null,"path":"window.location.pathname","ignore_local":false}},"search_path":"/local-search.xml"};
+
+    if (CONFIG.web_analytics.follow_dnt) {
+      var dntVal = navigator.doNotTrack || window.doNotTrack || navigator.msDoNotTrack;
+      Fluid.ctx.dnt = dntVal && (dntVal.startsWith('1') || dntVal.startsWith('yes') || dntVal.startsWith('on'));
+    }
+  </script>
+  <script  src="/js/utils.js" ></script>
+  <script  src="/js/color-schema.js" ></script>
+  
+
+
+  
+<meta name="generator" content="Hexo 6.3.0"></head>
+
+
+<body>
+  
+
+  <header>
+    
+
+<div class="header-inner" style="height: 70vh;">
+  <nav id="navbar" class="navbar fixed-top  navbar-expand-lg navbar-dark scrolling-navbar">
+  <div class="container">
+    <a class="navbar-brand" href="/">
+      <strong>Ju_Huang&#39;s Blog</strong>
+    </a>
+
+    <button id="navbar-toggler-btn" class="navbar-toggler" type="button" data-toggle="collapse"
+            data-target="#navbarSupportedContent"
+            aria-controls="navbarSupportedContent" aria-expanded="false" aria-label="Toggle navigation">
+      <div class="animated-icon"><span></span><span></span><span></span></div>
+    </button>
+
+    <!-- Collapsible content -->
+    <div class="collapse navbar-collapse" id="navbarSupportedContent">
+      <ul class="navbar-nav ml-auto text-center">
+        
+          
+          
+          
+          
+            <li class="nav-item">
+              <a class="nav-link" href="/">
+                <i class="iconfont icon-home-fill"></i>
+                <span>首页</span>
+              </a>
+            </li>
+          
+        
+          
+          
+          
+          
+            <li class="nav-item">
+              <a class="nav-link" href="/archives/">
+                <i class="iconfont icon-archive-fill"></i>
+                <span>归档</span>
+              </a>
+            </li>
+          
+        
+          
+          
+          
+          
+            <li class="nav-item">
+              <a class="nav-link" href="/categories/">
+                <i class="iconfont icon-category-fill"></i>
+                <span>分类</span>
+              </a>
+            </li>
+          
+        
+          
+          
+          
+          
+            <li class="nav-item">
+              <a class="nav-link" href="/tags/">
+                <i class="iconfont icon-tags-fill"></i>
+                <span>标签</span>
+              </a>
+            </li>
+          
+        
+          
+          
+          
+          
+            <li class="nav-item">
+              <a class="nav-link" href="/about/">
+                <i class="iconfont icon-user-fill"></i>
+                <span>关于</span>
+              </a>
+            </li>
+          
+        
+        
+          <li class="nav-item" id="search-btn">
+            <a class="nav-link" target="_self" href="javascript:;" data-toggle="modal" data-target="#modalSearch" aria-label="Search">
+              <i class="iconfont icon-search"></i>
+            </a>
+          </li>
+          
+        
+        
+          <li class="nav-item" id="color-toggle-btn">
+            <a class="nav-link" target="_self" href="javascript:;" aria-label="Color Toggle">
+              <i class="iconfont icon-dark" id="color-toggle-icon"></i>
+            </a>
+          </li>
+        
+      </ul>
+    </div>
+  </div>
+</nav>
+
+  
+
+<div id="banner" class="banner" parallax=true
+     style="background: url('/img/cat.png') no-repeat center center; background-size: cover;">
+  <div class="full-bg-img">
+    <div class="mask flex-center" style="background-color: rgba(0, 0, 0, 0.3)">
+      <div class="banner-text text-center fade-in-up">
+        <div class="h2">
+          
+            <span id="subtitle" data-typed-text="sql注入浅析"></span>
+          
+        </div>
+
+        
+          
+  <div class="mt-3">
+    
+    
+      <span class="post-meta">
+        <i class="iconfont icon-date-fill" aria-hidden="true"></i>
+        <time datetime="2022-12-29 17:05" pubdate>
+          2022年12月29日 下午
+        </time>
+      </span>
+    
+  </div>
+
+  <div class="mt-1">
+    
+      <span class="post-meta mr-2">
+        <i class="iconfont icon-chart"></i>
+        
+          2.7k 字
+        
+      </span>
+    
+
+    
+      <span class="post-meta mr-2">
+        <i class="iconfont icon-clock-fill"></i>
+        
+        
+        
+          23 分钟
+        
+      </span>
+    
+
+    
+    
+  </div>
+
+
+        
+      </div>
+
+      
+    </div>
+  </div>
+</div>
+
+</div>
+
+  </header>
+
+  <main>
+    
+      
+
+<div class="container-fluid nopadding-x">
+  <div class="row nomargin-x">
+    <div class="side-col d-none d-lg-block col-lg-2">
+      
+
+    </div>
+
+    <div class="col-lg-8 nopadding-x-md">
+      <div class="container nopadding-x-md" id="board-ctn">
+        <div id="board">
+          <article class="post-content mx-auto">
+            <!-- SEO header -->
+            <h1 style="display: none">sql注入浅析</h1>
+            
+            
+              <div class="markdown-body">
+                
+                <h3 id="前言"><a href="#前言" class="headerlink" title="前言:"></a>前言:</h3><p>​		sql注入是常见的安全缺陷类型之一,在OWASP基金会的历年安全缺陷TOP 10报告披露的安全缺陷类型中占据前列。</p>
+<h3 id="概念"><a href="#概念" class="headerlink" title="概念:"></a>概念:</h3><p>​      sql注入是由于服务器未对用户输入的数据进行过滤,或过滤不严格,导致用户输入直接拼接到数据库查询语句中,作为sql语句查询操作的一部分带入执行,从而实现非法操作。</p>
+<p>​		攻击者通过构建特定的数据库查询语句,通过页面响应结果来逐步获取想要得到的信息,进一步攻陷服务器.其危害小到获取网站用户的敏感信息(例如用户登录凭证,用户隐私资料等个人信息),大到通过脱库操作将整个网站数据库的信息全部泄露至外界,导致重大财产损失。</p>
+<h3 id="sql注入类型说明"><a href="#sql注入类型说明" class="headerlink" title="sql注入类型说明:"></a>sql注入类型说明:</h3><p>   sql注入根据网站页面响应情况可分为 可联合注入、报错注入、布尔注入、宽字节注入、时间盲注、二次注入、堆叠注入。</p>
+<h4 id="可联合注入"><a href="#可联合注入" class="headerlink" title="可联合注入"></a>可联合注入</h4><p>​		通过union关键字进行子查询语句操作，要注意的是子查询的字段数需要和前面的查询字段数保持一致。</p>
+<h4 id="报错注入"><a href="#报错注入" class="headerlink" title="报错注入"></a>报错注入</h4><p>​		通过执行数据库语句的返回的报错信息进行sql注入，利用原理是后端程序没有隐藏sql语句执行后的报错信息，直接显示在网站页面中，而sql语句的查询结果通过报错信息可以显示出来。常见的报错利用的sql函数有floor报错、ExtractVlaue报错、UpdateXML报错等。</p>
+<h4 id="布尔注入"><a href="#布尔注入" class="headerlink" title="布尔注入"></a>布尔注入</h4><p>​    通过sql语句执行后，网站页面的响应情况进行sql注入操作,通常是基于页面返回的数据总量、或者某些页面元素的改变进行判断。将我们想要查询到的结果通过if关键字与ASCII码进行逐位对比，通过返回的布尔值（true 或者 false） 使用 and 关键字与正常业务逻辑处理的sql查询语句进行逻辑与运算，通过页面响应情况进行字符串判断。</p>
+<h4 id="宽字节注入"><a href="#宽字节注入" class="headerlink" title="宽字节注入"></a>宽字节注入</h4><p>​		如果网站服务器的数据库使用了宽字节的编码方式（例如GBK等编码方式），攻击者可能会绕过网站的安全防护，因为 %df 加上 \ 会合并为一个汉字，最终会导致原本的转义效果失效，从而出现sql注入危害的风险。</p>
+<h4 id="时间盲注"><a href="#时间盲注" class="headerlink" title="时间盲注"></a>时间盲注</h4><p>​		通过数据库中能影响数据库语句执行时间的函数来实现注入操作，例如MySQL中的sleep()   benchmark()  rlike()等，主要是通过执行sql注入后的页面的响应所需时间进行字段判断。这个注入方式受网络环境情况影响，网速快慢会影响判断的准确度。</p>
+<h4 id="二次注入"><a href="#二次注入" class="headerlink" title="二次注入"></a>二次注入</h4><p>​		通过两次数据库操作实现sql注入。如果网站对用户输入数据进行了转义处理（例如将单双引号进行了转义，即  ‘    “  &#x3D;&gt;    \‘   \“),而数据库系统将数据保存时会自动去掉反斜杠\   因此我们可用通过将构造的特定数据库查询语句的一部分作为数据保存在数据库中，第二次再通过网站的相关功能点拼接执行执行我们写入数据库的查询语句，从而实现绕过安全防护的sql注入操作。该注入类型一般出现在网站中的个人信息修改，用户账户密码修改找回等与用户数据相关的功能点中。</p>
+<h4 id="堆叠注入"><a href="#堆叠注入" class="headerlink" title="堆叠注入"></a>堆叠注入</h4><p>​		网站数据库使用了多语句查询方式，通过;号即可闭合上一条语句的执行。</p>
+<h3 id="测试sql注入缺陷的常规步骤说明："><a href="#测试sql注入缺陷的常规步骤说明：" class="headerlink" title="测试sql注入缺陷的常规步骤说明："></a>测试sql注入缺陷的常规步骤说明：</h3><h4 id="1-首先判断是否存在sql注入缺陷，结合推断闭合方式进行"><a href="#1-首先判断是否存在sql注入缺陷，结合推断闭合方式进行" class="headerlink" title="1.首先判断是否存在sql注入缺陷，结合推断闭合方式进行"></a>1.首先判断是否存在sql注入缺陷，结合推断闭合方式进行</h4><p>​		输出单双引号（‘ “），观察页面返回情况是否异常，如果出现sql语句报错信息，就完全能确认其闭合方式，后续sql注入方式也明确了（主要利用报错注入）</p>
+<p>​		确认闭合方式。可能存在sql注入缺陷的输入点的实际sql执行语句的闭合方式有多种情况，例如 单引号闭合，双引号闭合，小括号闭合，或者是数字型（没有闭合符号），也有可能是多种符号组合起来的闭合方式，如  ‘)    “)    ))  ‘)))等情况，根据具体情况考虑闭合方式。如果页面有显示位的话，尝试利用其来显示我们的SQL查询结果，这里要主要查询的字段数，通常利用order by 、group by 进行字段数判断。</p>
+<figure class="highlight vbnet"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><code class="hljs vbnet">注意：输入单双引号 ‘ “ ，页面异常，而输入双单引号” ’ ，页面返回正常页面，就能确认其闭合符号中包含单引号，可能是‘  <span class="hljs-comment">&#x27;)   ‘)) 等情况，反之即为闭合符号中包含双引号。如果测试单双引号和双单引号都引起页面异常的话，可以确定是 ） 或者是无符号闭合的情况</span><br></code></pre></td></tr></table></figure>
+
+<p>​		</p>
+<p>​		利用各种方式确认测试情况。如果页面是否查询到数据返回的页面的一样的话，可以考虑通过DNSlog外带注入的方式确认测试情况（这里要注意的是该方法仅适合网站服务器上的操作系统是Windows系统的情况，对于linux系统而言，并不适用，因为Linux系统没有VNC路径），我们还可以结合能够影响数据库语句执行时间的数据库系统函数进行闭合方式确认，如上文时间盲注中提到的sleep函数等，还可以尝试利用into outfile函数将查询结果写到网站的可访问路径下，然后通过浏览器进行访问。</p>
+<h4 id="2-确认闭合方式后，尝试进一步渗透利用"><a href="#2-确认闭合方式后，尝试进一步渗透利用" class="headerlink" title="2.确认闭合方式后，尝试进一步渗透利用"></a>2.确认闭合方式后，尝试进一步渗透利用</h4><p>​		一般来说，我们可以通过sql查询语句向目标服务器写入webshell，利用into outfile  、 into dumpfile等文件写入函数向其写入一句话木马。写入文件有前提条件，例如目标网站后端语言是PHP，那么考虑的因素有四点，其一：PHP是否开启了全局GPC， 其二：获取目标网站根目录的绝对路径， 其三：当前使用Mysql的用户是否具有读写权限 , 其四：数据库配置文件中是否设置了secure_file_priv&#x3D;，如果不能通过这种方式写shell的话，可用尝试利用全局日志或者慢日志进行webshell写入。</p>
+<h4 id="3-链接webshell，进行后续渗透"><a href="#3-链接webshell，进行后续渗透" class="headerlink" title="3.链接webshell，进行后续渗透"></a>3.链接webshell，进行后续渗透</h4><p>​		利用工具进行链接，或者通过自己编写的大马进行操作也可。后续的渗透流程根据具体情况进行。</p>
+<p>​		</p>
+<h3 id="sql注入中，网站安全防护的绕过方式浅析："><a href="#sql注入中，网站安全防护的绕过方式浅析：" class="headerlink" title="sql注入中，网站安全防护的绕过方式浅析："></a>sql注入中，网站安全防护的绕过方式浅析：</h3><p>​		通常情况下，绝大多数的网站都存在防护强度不一的安全防御机制，业内称之为网站waf，waf进一步又可分为代码型waf,硬件型waf，云waf,还有软件型waf等，这里着重说明软件型waf,以及代码型waf的绕过方式。</p>
+<p>​		软件型waf,像D盾、安全狗、宝塔waf之类市面上常见的安全产品，有一定的防御作用，但是仍有被绕过的可能，以下针对过滤规则进行说明。</p>
+<h4 id="关键词过滤绕过"><a href="#关键词过滤绕过" class="headerlink" title="关键词过滤绕过"></a>关键词过滤绕过</h4><p>​		如果waf对关键字进行了过滤，例如select 、union、database等词，可以考虑大小写，双写替换，使用其他等效的关键字，或者其他有相似作用的关键字进行替代，and 可以使用 &amp;&amp; 代替， or可以用||代替  ，&#x3D;号可用like代替，可以尝试利用内联注释绕过。甚至可以尝试利用字符混淆的方式进行检测绕过。</p>
+<h4 id="空格过滤绕过"><a href="#空格过滤绕过" class="headerlink" title="空格过滤绕过"></a>空格过滤绕过</h4><p>​		考虑使用其他符号等效代替，例如使用%0b 、%0a、注释等来代替空格，或者用小括号来闭合。</p>
+<h4 id="注释过滤绕过"><a href="#注释过滤绕过" class="headerlink" title="注释过滤绕过"></a>注释过滤绕过</h4><p>​		如果注释如–  # 号被过滤，可以尝试闭合后面的查询语句。</p>
+<h4 id="单双引号被过滤"><a href="#单双引号被过滤" class="headerlink" title="单双引号被过滤"></a>单双引号被过滤</h4><p>​		利用16进制数代替所要查询的字符串。</p>
+<p>​		</p>
+
+                
+              </div>
+            
+            <hr/>
+            <div>
+              <div class="post-metas my-3">
+  
+  
+    <div class="post-meta">
+      <i class="iconfont icon-tags"></i>
+      
+        <a href="/tags/SQL%E6%B3%A8%E5%85%A5%E7%9B%B8%E5%85%B3/">#SQL注入相关</a>
+      
+    </div>
+  
+</div>
+
+
+              
+  
+
+  <div class="license-box my-3">
+    <div class="license-title">
+      <div>sql注入浅析</div>
+      <div>http://example.com/2022/12/29/inject/</div>
+    </div>
+    <div class="license-meta">
+      
+        <div class="license-meta-item">
+          <div>作者</div>
+          <div>Ju Huang</div>
+        </div>
+      
+      
+        <div class="license-meta-item license-meta-date">
+          <div>发布于</div>
+          <div>2022年12月29日</div>
+        </div>
+      
+      
+      
+        <div class="license-meta-item">
+          <div>许可协议</div>
+          <div>
+            
+              
+              
+                <a target="_blank" href="https://creativecommons.org/licenses/by/4.0/">
+                  <span class="hint--top hint--rounded" aria-label="BY - 署名">
+                    <i class="iconfont icon-by"></i>
+                  </span>
+                </a>
+              
+            
+          </div>
+        </div>
+      
+    </div>
+    <div class="license-icon iconfont"></div>
+  </div>
+
+
+
+              
+                <div class="post-prevnext my-3">
+                  <article class="post-prev col-6">
+                    
+                    
+                      <a href="/2023/01/03/liuliang/" title="关于冰蝎工具的简易流量分析">
+                        <i class="iconfont icon-arrowleft"></i>
+                        <span class="hidden-mobile">关于冰蝎工具的简易流量分析</span>
+                        <span class="visible-mobile">上一篇</span>
+                      </a>
+                    
+                  </article>
+                  <article class="post-next col-6">
+                    
+                    
+                      <a href="/2022/12/18/XSS/" title="浅析XSS漏洞">
+                        <span class="hidden-mobile">浅析XSS漏洞</span>
+                        <span class="visible-mobile">下一篇</span>
+                        <i class="iconfont icon-arrowright"></i>
+                      </a>
+                    
+                  </article>
+                </div>
+              
+            </div>
+
+            
+          </article>
+        </div>
+      </div>
+    </div>
+
+    <div class="side-col d-none d-lg-block col-lg-2">
+      
+  <aside class="sidebar" style="margin-left: -1rem">
+    <div id="toc">
+  <p class="toc-header">
+    <i class="iconfont icon-list"></i>
+    <span>目录</span>
+  </p>
+  <div class="toc-body" id="toc-body"></div>
+</div>
+
+
+
+  </aside>
+
+
+    </div>
+  </div>
+</div>
+
+
+
+
+
+  
+
+
+
+  
+
+
+
+  
+
+
+
+  
+
+
+
+  
+
+
+
+
+
+
+
+    
+
+    
+      <a id="scroll-top-button" aria-label="TOP" href="#" role="button">
+        <i class="iconfont icon-arrowup" aria-hidden="true"></i>
+      </a>
+    
+
+    
+      <div class="modal fade" id="modalSearch" tabindex="-1" role="dialog" aria-labelledby="ModalLabel"
+     aria-hidden="true">
+  <div class="modal-dialog modal-dialog-scrollable modal-lg" role="document">
+    <div class="modal-content">
+      <div class="modal-header text-center">
+        <h4 class="modal-title w-100 font-weight-bold">搜索</h4>
+        <button type="button" id="local-search-close" class="close" data-dismiss="modal" aria-label="Close">
+          <span aria-hidden="true">&times;</span>
+        </button>
+      </div>
+      <div class="modal-body mx-3">
+        <div class="md-form mb-5">
+          <input type="text" id="local-search-input" class="form-control validate">
+          <label data-error="x" data-success="v" for="local-search-input">关键词</label>
+        </div>
+        <div class="list-group" id="local-search-result"></div>
+      </div>
+    </div>
+  </div>
+</div>
+
+    
+
+    
+  </main>
+
+  <footer>
+    <div class="footer-inner">
+  
+    <div class="footer-content">
+       <i class="iconfont icon-love"></i> 
+    </div>
+  
+  
+  
+  
+</div>
+
+  </footer>
+
+  <!-- Scripts -->
+  
+  <script  src="https://lib.baomitu.com/nprogress/0.2.0/nprogress.min.js" ></script>
+  <link  rel="stylesheet" href="https://lib.baomitu.com/nprogress/0.2.0/nprogress.min.css" />
+
+  <script>
+    NProgress.configure({"showSpinner":false,"trickleSpeed":100})
+    NProgress.start()
+    window.addEventListener('load', function() {
+      NProgress.done();
+    })
+  </script>
+
+
+<script  src="https://lib.baomitu.com/jquery/3.6.0/jquery.min.js" ></script>
+<script  src="https://lib.baomitu.com/twitter-bootstrap/4.6.1/js/bootstrap.min.js" ></script>
+<script  src="/js/events.js" ></script>
+<script  src="/js/plugins.js" ></script>
+
+
+  <script  src="https://lib.baomitu.com/typed.js/2.0.12/typed.min.js" ></script>
+  <script>
+    (function (window, document) {
+      var typing = Fluid.plugins.typing;
+      var subtitle = document.getElementById('subtitle');
+      if (!subtitle || !typing) {
+        return;
+      }
+      var text = subtitle.getAttribute('data-typed-text');
+      
+        typing(text);
+      
+    })(window, document);
+  </script>
+
+
+
+
+  
+    <script  src="/js/img-lazyload.js" ></script>
+  
+
+
+
+
+  
+<script>
+  Fluid.utils.createScript('https://lib.baomitu.com/tocbot/4.18.2/tocbot.min.js', function() {
+    var toc = jQuery('#toc');
+    if (toc.length === 0 || !window.tocbot) { return; }
+    var boardCtn = jQuery('#board-ctn');
+    var boardTop = boardCtn.offset().top;
+
+    window.tocbot.init(Object.assign({
+      tocSelector     : '#toc-body',
+      contentSelector : '.markdown-body',
+      linkClass       : 'tocbot-link',
+      activeLinkClass : 'tocbot-active-link',
+      listClass       : 'tocbot-list',
+      isCollapsedClass: 'tocbot-is-collapsed',
+      collapsibleClass: 'tocbot-is-collapsible',
+      scrollSmooth    : true,
+      includeTitleTags: true,
+      headingsOffset  : -boardTop,
+    }, CONFIG.toc));
+    if (toc.find('.toc-list-item').length > 0) {
+      toc.css('visibility', 'visible');
+    }
+
+    Fluid.events.registerRefreshCallback(function() {
+      if ('tocbot' in window) {
+        tocbot.refresh();
+        var toc = jQuery('#toc');
+        if (toc.length === 0 || !tocbot) {
+          return;
+        }
+        if (toc.find('.toc-list-item').length > 0) {
+          toc.css('visibility', 'visible');
+        }
+      }
+    });
+  });
+</script>
+
+
+  <script src=https://lib.baomitu.com/clipboard.js/2.0.11/clipboard.min.js></script>
+
+  <script>Fluid.plugins.codeWidget();</script>
+
+
+  
+<script>
+  Fluid.utils.createScript('https://lib.baomitu.com/anchor-js/4.3.1/anchor.min.js', function() {
+    window.anchors.options = {
+      placement: CONFIG.anchorjs.placement,
+      visible  : CONFIG.anchorjs.visible
+    };
+    if (CONFIG.anchorjs.icon) {
+      window.anchors.options.icon = CONFIG.anchorjs.icon;
+    }
+    var el = (CONFIG.anchorjs.element || 'h1,h2,h3,h4,h5,h6').split(',');
+    var res = [];
+    for (var item of el) {
+      res.push('.markdown-body > ' + item.trim());
+    }
+    if (CONFIG.anchorjs.placement === 'left') {
+      window.anchors.options.class = 'anchorjs-link-left';
+    }
+    window.anchors.add(res.join(', '));
+
+    Fluid.events.registerRefreshCallback(function() {
+      if ('anchors' in window) {
+        anchors.removeAll();
+        var el = (CONFIG.anchorjs.element || 'h1,h2,h3,h4,h5,h6').split(',');
+        var res = [];
+        for (var item of el) {
+          res.push('.markdown-body > ' + item.trim());
+        }
+        if (CONFIG.anchorjs.placement === 'left') {
+          anchors.options.class = 'anchorjs-link-left';
+        }
+        anchors.add(res.join(', '));
+      }
+    });
+  });
+</script>
+
+
+  
+<script>
+  Fluid.utils.createScript('https://lib.baomitu.com/fancybox/3.5.7/jquery.fancybox.min.js', function() {
+    Fluid.plugins.fancyBox();
+  });
+</script>
+
+
+  <script>Fluid.plugins.imageCaption();</script>
+
+  <script  src="/js/local-search.js" ></script>
+
+
+
+
+
+<!-- 主题的启动项，将它保持在最底部 -->
+<!-- the boot of the theme, keep it at the bottom -->
+<script  src="/js/boot.js" ></script>
+
+
+  
+
+  <noscript>
+    <div class="noscript-warning">博客在允许 JavaScript 运行的环境下浏览效果更佳</div>
+  </noscript>
+</body>
+</html>

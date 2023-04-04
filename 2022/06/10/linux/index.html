@@ -1,0 +1,935 @@
+
+
+<!DOCTYPE html>
+<html lang="zh-CN" data-default-color-scheme=auto>
+
+
+
+<head>
+  <meta charset="UTF-8">
+  <link rel="apple-touch-icon" sizes="76x76" href="/img/fluid.png">
+  <link rel="icon" href="/img/fluid.png">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=5.0, shrink-to-fit=no">
+  <meta http-equiv="x-ua-compatible" content="ie=edge">
+  
+  <meta name="theme-color" content="#2f4154">
+  <meta name="author" content="Ju Huang">
+  <meta name="keywords" content="">
+  
+    <meta name="description" content="Linux创建用户   useradduseradd [-参数] 用户名可选参数: -g 指定用户组           列如 -g 用户组gid ,-g 用户组名字 -u 指定用户uid         uid&#x3D;0默认为root用户,即用有管理员权限 -d 指定用户家目录   -d&#x2F;想要指定家目录的绝对路径 使用-d参数会创建存放用户配置的文件 例如 useradd -d &amp;">
+<meta property="og:type" content="article">
+<meta property="og:title" content="linux常用命令汇总">
+<meta property="og:url" content="http://example.com/2022/06/10/linux/index.html">
+<meta property="og:site_name" content="Ju_Huang">
+<meta property="og:description" content="Linux创建用户   useradduseradd [-参数] 用户名可选参数: -g 指定用户组           列如 -g 用户组gid ,-g 用户组名字 -u 指定用户uid         uid&#x3D;0默认为root用户,即用有管理员权限 -d 指定用户家目录   -d&#x2F;想要指定家目录的绝对路径 使用-d参数会创建存放用户配置的文件 例如 useradd -d &amp;">
+<meta property="og:locale" content="zh_CN">
+<meta property="og:image" content="http://example.com/img/linux.png">
+<meta property="article:published_time" content="2022-06-10T12:05:19.000Z">
+<meta property="article:modified_time" content="2023-04-04T09:21:53.042Z">
+<meta property="article:author" content="Ju Huang">
+<meta property="article:tag" content="Linux">
+<meta name="twitter:card" content="summary_large_image">
+<meta name="twitter:image" content="http://example.com/img/linux.png">
+  
+  
+  
+  <title>linux常用命令汇总 - Ju_Huang</title>
+
+  <link  rel="stylesheet" href="https://lib.baomitu.com/twitter-bootstrap/4.6.1/css/bootstrap.min.css" />
+
+
+
+  <link  rel="stylesheet" href="https://lib.baomitu.com/github-markdown-css/4.0.0/github-markdown.min.css" />
+
+  <link  rel="stylesheet" href="https://lib.baomitu.com/hint.css/2.7.0/hint.min.css" />
+
+  <link  rel="stylesheet" href="https://lib.baomitu.com/fancybox/3.5.7/jquery.fancybox.min.css" />
+
+
+
+<!-- 主题依赖的图标库，不要自行修改 -->
+<!-- Do not modify the link that theme dependent icons -->
+
+<link rel="stylesheet" href="//at.alicdn.com/t/font_1749284_hj8rtnfg7um.css">
+
+
+
+<link rel="stylesheet" href="//at.alicdn.com/t/font_1736178_lbnruvf0jn.css">
+
+
+<link  rel="stylesheet" href="/css/main.css" />
+
+
+  <link id="highlight-css" rel="stylesheet" href="/css/highlight.css" />
+  
+    <link id="highlight-css-dark" rel="stylesheet" href="/css/highlight-dark.css" />
+  
+
+
+
+
+  <script id="fluid-configs">
+    var Fluid = window.Fluid || {};
+    Fluid.ctx = Object.assign({}, Fluid.ctx)
+    var CONFIG = {"hostname":"example.com","root":"/","version":"1.9.4","typing":{"enable":true,"typeSpeed":70,"cursorChar":"_","loop":false,"scope":[]},"anchorjs":{"enable":true,"element":"h1,h2,h3,h4,h5,h6","placement":"left","visible":"hover","icon":""},"progressbar":{"enable":true,"height_px":3,"color":"#29d","options":{"showSpinner":false,"trickleSpeed":100}},"code_language":{"enable":true,"default":"TEXT"},"copy_btn":true,"image_caption":{"enable":true},"image_zoom":{"enable":true,"img_url_replace":["",""]},"toc":{"enable":true,"placement":"right","headingSelector":"h1,h2,h3,h4,h5,h6","collapseDepth":0},"lazyload":{"enable":true,"loading_img":"/img/loading.gif","onlypost":false,"offset_factor":2},"web_analytics":{"enable":false,"follow_dnt":true,"baidu":null,"google":null,"gtag":null,"tencent":{"sid":null,"cid":null},"woyaola":null,"cnzz":null,"leancloud":{"app_id":null,"app_key":null,"server_url":null,"path":"window.location.pathname","ignore_local":false}},"search_path":"/local-search.xml"};
+
+    if (CONFIG.web_analytics.follow_dnt) {
+      var dntVal = navigator.doNotTrack || window.doNotTrack || navigator.msDoNotTrack;
+      Fluid.ctx.dnt = dntVal && (dntVal.startsWith('1') || dntVal.startsWith('yes') || dntVal.startsWith('on'));
+    }
+  </script>
+  <script  src="/js/utils.js" ></script>
+  <script  src="/js/color-schema.js" ></script>
+  
+
+
+  
+<meta name="generator" content="Hexo 6.3.0"></head>
+
+
+<body>
+  
+
+  <header>
+    
+
+<div class="header-inner" style="height: 70vh;">
+  <nav id="navbar" class="navbar fixed-top  navbar-expand-lg navbar-dark scrolling-navbar">
+  <div class="container">
+    <a class="navbar-brand" href="/">
+      <strong>Ju_Huang&#39;s Blog</strong>
+    </a>
+
+    <button id="navbar-toggler-btn" class="navbar-toggler" type="button" data-toggle="collapse"
+            data-target="#navbarSupportedContent"
+            aria-controls="navbarSupportedContent" aria-expanded="false" aria-label="Toggle navigation">
+      <div class="animated-icon"><span></span><span></span><span></span></div>
+    </button>
+
+    <!-- Collapsible content -->
+    <div class="collapse navbar-collapse" id="navbarSupportedContent">
+      <ul class="navbar-nav ml-auto text-center">
+        
+          
+          
+          
+          
+            <li class="nav-item">
+              <a class="nav-link" href="/">
+                <i class="iconfont icon-home-fill"></i>
+                <span>首页</span>
+              </a>
+            </li>
+          
+        
+          
+          
+          
+          
+            <li class="nav-item">
+              <a class="nav-link" href="/archives/">
+                <i class="iconfont icon-archive-fill"></i>
+                <span>归档</span>
+              </a>
+            </li>
+          
+        
+          
+          
+          
+          
+            <li class="nav-item">
+              <a class="nav-link" href="/categories/">
+                <i class="iconfont icon-category-fill"></i>
+                <span>分类</span>
+              </a>
+            </li>
+          
+        
+          
+          
+          
+          
+            <li class="nav-item">
+              <a class="nav-link" href="/tags/">
+                <i class="iconfont icon-tags-fill"></i>
+                <span>标签</span>
+              </a>
+            </li>
+          
+        
+          
+          
+          
+          
+            <li class="nav-item">
+              <a class="nav-link" href="/about/">
+                <i class="iconfont icon-user-fill"></i>
+                <span>关于</span>
+              </a>
+            </li>
+          
+        
+        
+          <li class="nav-item" id="search-btn">
+            <a class="nav-link" target="_self" href="javascript:;" data-toggle="modal" data-target="#modalSearch" aria-label="Search">
+              <i class="iconfont icon-search"></i>
+            </a>
+          </li>
+          
+        
+        
+          <li class="nav-item" id="color-toggle-btn">
+            <a class="nav-link" target="_self" href="javascript:;" aria-label="Color Toggle">
+              <i class="iconfont icon-dark" id="color-toggle-icon"></i>
+            </a>
+          </li>
+        
+      </ul>
+    </div>
+  </div>
+</nav>
+
+  
+
+<div id="banner" class="banner" parallax=true
+     style="background: url('/img/cat.png') no-repeat center center; background-size: cover;">
+  <div class="full-bg-img">
+    <div class="mask flex-center" style="background-color: rgba(0, 0, 0, 0.3)">
+      <div class="banner-text text-center fade-in-up">
+        <div class="h2">
+          
+            <span id="subtitle" data-typed-text="linux常用命令汇总"></span>
+          
+        </div>
+
+        
+          
+  <div class="mt-3">
+    
+    
+      <span class="post-meta">
+        <i class="iconfont icon-date-fill" aria-hidden="true"></i>
+        <time datetime="2022-06-10 20:05" pubdate>
+          2022年6月10日 晚上
+        </time>
+      </span>
+    
+  </div>
+
+  <div class="mt-1">
+    
+      <span class="post-meta mr-2">
+        <i class="iconfont icon-chart"></i>
+        
+          8k 字
+        
+      </span>
+    
+
+    
+      <span class="post-meta mr-2">
+        <i class="iconfont icon-clock-fill"></i>
+        
+        
+        
+          68 分钟
+        
+      </span>
+    
+
+    
+    
+  </div>
+
+
+        
+      </div>
+
+      
+    </div>
+  </div>
+</div>
+
+</div>
+
+  </header>
+
+  <main>
+    
+      
+
+<div class="container-fluid nopadding-x">
+  <div class="row nomargin-x">
+    <div class="side-col d-none d-lg-block col-lg-2">
+      
+
+    </div>
+
+    <div class="col-lg-8 nopadding-x-md">
+      <div class="container nopadding-x-md" id="board-ctn">
+        <div id="board">
+          <article class="post-content mx-auto">
+            <!-- SEO header -->
+            <h1 style="display: none">linux常用命令汇总</h1>
+            
+            
+              <div class="markdown-body">
+                
+                <h1 id="Linux"><a href="#Linux" class="headerlink" title="Linux"></a>Linux</h1><h3 id="创建用户-useradd"><a href="#创建用户-useradd" class="headerlink" title="创建用户   useradd"></a>创建用户   useradd</h3><h4 id="useradd-参数-用户名"><a href="#useradd-参数-用户名" class="headerlink" title="useradd [-参数] 用户名"></a>useradd [-参数] 用户名</h4><p>可选参数:</p>
+<p>-g 指定用户组           列如 -g 用户组gid ,-g 用户组名字</p>
+<p>-u 指定用户uid         uid&#x3D;0默认为root用户,即用有管理员权限</p>
+<p>-d 指定用户家目录   -d&#x2F;想要指定家目录的绝对路径 使用-d参数会创建存放用户配置的文件 例如 useradd -d &#x2F;var&#x2F;test&#x2F; 该命令会在&#x2F;var目录下创建文件夹test用来存放用户配置</p>
+<p>注意:若存放用户配置文件的文件夹已经存在,系统不会从 skel 目录里向其中复制任何文件。这样创建出来的用户不能正常使用</p>
+<p>&#x2F;etc&#x2F;skel存放着用户的配置文件</p>
+<p>-l    该参数表示不要将用户添加到最近登录和登录失败数据库。</p>
+<p>-e  指定用户帐户将被禁用的日期。日期是以YYYY&#x2F;MM&#x2F;DD格式指定。</p>
+<p> -f   指定密码过期后，账户被彻底禁用之前的天数。0 表示立即禁用，-1表示禁用这个功能。</p>
+<p>-D 更改新用户创建时的配置信息,如过期时间等</p>
+<figure class="highlight gradle"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br></pre></td><td class="code"><pre><code class="hljs gradle"><span class="hljs-regexp">/etc/</span>passwd<br>    用户账户信息。<br><br><span class="hljs-regexp">/etc/</span>shadow<br>    安全用户账户信息。<br><br><span class="hljs-regexp">/etc/g</span>roup<br>    组账户信息。<br><br><span class="hljs-regexp">/etc/g</span>shadow<br>    安全组账户信息。<br><br><span class="hljs-regexp">/etc/</span><span class="hljs-keyword">default</span>/useradd<br>    账户创建的默认值。<br><br><span class="hljs-regexp">/etc/</span>skel/<br>    包含默认文件的目录。<br>    <br><span class="hljs-regexp">/etc/g</span>roup<br>        组账户信息。<br><br><span class="hljs-regexp">/etc/g</span>shadow<br>        安全组账户信息。<br><br><span class="hljs-regexp">/etc/</span>login.defs<br>        Shadow 密码套件配置。<br><br><span class="hljs-regexp">/etc/</span>passwd<br>        用户账户信息。<br><br><span class="hljs-regexp">/etc/</span>shadow<br>        安全用户账户信息。<br><br></code></pre></td></tr></table></figure>
+
+
+
+<p>&#x2F;etc&#x2F;default&#x2F;useradd存放着用户创建的默认配置信息</p>
+<h3 id="usermod-参数-用户名"><a href="#usermod-参数-用户名" class="headerlink" title="usermod [-参数] 用户名"></a>usermod [-参数] 用户名</h3><p>-L ,–lock  锁定用户,使用该参数修改后的用户不允许远程登录主机</p>
+<p>-U,–unlock 解锁被锁定的用户,与-L参数相对应</p>
+<h3 id="change-M"><a href="#change-M" class="headerlink" title="change -M"></a>change -M</h3><p>修改用户密码过期时间,也可以通过vim &#x2F;etc&#x2F;login.defs 修改该文件来设置用户密码的过期时间</p>
+<h3 id="静态显示进程信息-ps命令"><a href="#静态显示进程信息-ps命令" class="headerlink" title="静态显示进程信息 ps命令"></a><strong>静态显示进程信息 ps命令</strong></h3><p>linux上进程有5种状态:</p>
+<ol>
+<li><p>运行(正在运行或在运行队列中等待)</p>
+</li>
+<li><p>中断(休眠中, 受阻, 在等待某个条件的形成或接受到信号)</p>
+</li>
+<li><p>不可中断(收到信号不唤醒和不可运行, 进程必须等待直到有中断发生)</p>
+</li>
+<li><p>僵死(进程已终止, 但进程描述符存在, 直到父进程调用wait4()系统调用后释放)</p>
+</li>
+<li><p>停止(进程收到SIGSTOP, SIGSTP, SIGTIN, SIGTOU信号后停止运行运行)</p>
+</li>
+</ol>
+<p>格式   ps [options]</p>
+<p>-A 显示所有进程,无论是否运行</p>
+<p>-a 显示当前用户正在运行的进程</p>
+<p>a 进一步显示-a展示的信息</p>
+<p>r 仅显示正在运行的命令</p>
+<p>T 显示与此终端相关的所有进程</p>
+<p>U 按有效用户ID（EUID）或名称选择。这将选择有效用户名或ID位于userlist中的进程。</p>
+<p>-U 按真实用户ID（RUID）或名称选择。它选择其真实用户名或ID在用户列表中。</p>
+<p>x  显示所有程序，不以终端机来区分。</p>
+<p>u  以用户为主的格式来显示程序状况。</p>
+<h3 id="ps-aux"><a href="#ps-aux" class="headerlink" title="ps aux"></a>ps aux</h3><p>ps默认情况下仅显示终端连接过程。 如果要显示其他未连接到终端的进程，可以使用<strong>x</strong>选项。</p>
+<p># a 选项也会打印所有其他用户进程。</p>
+<p># u 显示进程所有者。</p>
+<p># x 显示其他未连接到终端的进程</p>
+<p><img src="/images/255ba607230cb4f209dc8068a00933e.png" srcset="/img/loading.gif" lazyload alt="255ba607230cb4f209dc8068a00933e"></p>
+<p>USER 进程的属主；</p>
+<p>PID 进程的ID；</p>
+<p>PPID 父进程；</p>
+<p>%CPU 进程占用的CPU百分比；</p>
+<p>%MEM 占用内存的百分比；</p>
+<p>NI 进程的NICE值，数值大，表示较少占用CPU时间；</p>
+<p>VSZ 进程使用的虚拟內存量（KB）；</p>
+<p>RSS 该进程占用的固定內存量（KB）（驻留中页的数量）；</p>
+<p>TTY 该进程在那個終端上運行（登陸者的終端位置），若與終端無關，則顯示（？）。<br>若为pts&#x2F;0等，则表示由网络连接主机进程</p>
+<p>WCHAN 当前进程是否正在進行，若为-表示正在進行；</p>
+<p>START 該進程被觸發启动时间；</p>
+<p>TIME 該进程實際使用CPU運行的时间；</p>
+<p>COMMAND 命令的名称和参数；</p>
+<p>STAT狀態位常見的狀態字符<br>————————————————</p>
+<h3 id="groupadd命令"><a href="#groupadd命令" class="headerlink" title="groupadd命令"></a>groupadd命令</h3><p>用法：groupadd [选项]  组</p>
+<p>选项:<br>  -f, –force		                         如果组已经存在则成功退出,并且如果 GID 已经存在则取消 -g<br>  -g, –gid GID                                 为新组使用 GID<br>  -h, –help                                      显示此帮助信息并推出<br>  -K, –key KEY&#x3D;VALUE                  不使用 &#x2F;etc&#x2F;login.defs 中的默认值<br>  -o, –non-unique                         允许创建有重复 GID 的组<br>  -p, –password PASSWORD       为新组使用此加密过的密码<br>  -r, –system                                   创建一个系统账户</p>
+<h3 id="groupmod-命令"><a href="#groupmod-命令" class="headerlink" title="groupmod 命令"></a>groupmod 命令</h3><p>用法：groupmod [选项] 组</p>
+<p>选项:<br>  -g, –gid GID                                     将组 ID 改为 GID<br>  -h, –help                                          显示此帮助信息并推出<br>  -n, –new-name NEW_GROUP      改名为 NEW_GROUP</p>
+<h3 id="vim-编辑命令"><a href="#vim-编辑命令" class="headerlink" title="vim 编辑命令"></a>vim 编辑命令</h3><ul>
+<li><p>在命令模式下</p>
+</li>
+<li><p>dd 表示删除整行</p>
+</li>
+<li><p>&#x2F;字符串 表示查找目标字符串</p>
+</li>
+<li><p>跳到第一行的第一个字符：按两次“g”</p>
+</li>
+<li><p>跳转到当前行的第一个字符：在当前行按“0”</p>
+</li>
+<li><p>跳到文本的最后一行：shift+g</p>
+</li>
+<li><p>跳到最后一行的最后一个字符： shift+g  shift+4</p>
+</li>
+<li><p>显示当前行号： :nu</p>
+</li>
+<li><p>显示所有行号： :set nu</p>
+</li>
+<li><p>强制保存并退出:   wq!</p>
+</li>
+</ul>
+<h3 id="sudo命令"><a href="#sudo命令" class="headerlink" title="sudo命令"></a>sudo命令</h3><p>使普通用户执行某些ROOT用户才能执行的命令</p>
+<p>sudo -l 查询当前用户可以执行哪些命令</p>
+<p>vim &#x2F;etc&#x2F;sudoers 设置普通用户的sudo命令</p>
+<p><img src="/images/a53e4b98219e6f2637d46f25ec4139a.png" srcset="/img/loading.gif" lazyload alt="a53e4b98219e6f2637d46f25ec4139a"></p>
+<h2 id=""><a href="#" class="headerlink" title=""></a></h2><p>root    ALL&#x3D;(ALL)       ALL</p>
+<ul>
+<li><p>用户名 IP地址&#x3D;以什么身份执行命令   执行的命令 </p>
+</li>
+<li><p>示例:root  192.168.31.243&#x3D;(ALL)       &#x2F;usr&#x2F;bin&#x2F;vim , &#x2F;bin&#x2F;chgrp</p>
+</li>
+</ul>
+<p>%wheel        ALL&#x3D;(ALL)       NOPASSWD: ALL </p>
+<ul>
+<li>该命令表示处于该组用户能以任何身份执行任何命令</li>
+</ul>
+<h3 id="计划任务"><a href="#计划任务" class="headerlink" title="计划任务"></a>计划任务</h3><h4 id="一次性计划-at"><a href="#一次性计划-at" class="headerlink" title="一次性计划 at"></a>一次性计划 at</h4><p>示例:</p>
+<p><img src="/images/2f812cdd7ab1245c8f49f4b5a6d3eb2.png" srcset="/img/loading.gif" lazyload alt="2f812cdd7ab1245c8f49f4b5a6d3eb2"></p>
+<h4 id="crontab-周期性计划"><a href="#crontab-周期性计划" class="headerlink" title="crontab  周期性计划"></a>crontab  周期性计划</h4><p><img src="/images/bf752a107a86b3681bdc02f500e9932.png" srcset="/img/loading.gif" lazyload alt="bf752a107a86b3681bdc02f500e9932"></p>
+<p><img src="/images/c738b237b88afd85b4fe5c3c797840a.png" srcset="/img/loading.gif" lazyload alt="c738b237b88afd85b4fe5c3c797840a"></p>
+<p><img src="/images/45fc09fcde253422c3a9ae5a3f5978a.png" srcset="/img/loading.gif" lazyload alt="45fc09fcde253422c3a9ae5a3f5978a"></p>
+<p>可编写脚本文件通过crontab命令配置执行</p>
+<p>crontab -l 查看设置的计划任务</p>
+<p>crontab -r 清除任务计划</p>
+<h3 id="find-命令"><a href="#find-命令" class="headerlink" title="find 命令"></a>find 命令</h3><p>find 命令用来在指定目录下查找文件。任何位于参数之前的字符串都将被视为欲查找的目录名。如果使用该命令时，不设置任何参数，则 find 命令将在当前目录下查找子目录与文件。并且将查找到的子目录和文件全部进行显示。</p>
+<p>语法<br>find   path   -option   [   -print ]   [ -exec   -ok   command ]   {} ;<br>参数说明 :</p>
+<p>find 根据下列规则判断 path 和 expression，在命令列上第一个 - ，-option 之前的部份为 path，之后的是 expression。如果 path 是空字串则使用目前路径，如果 expression 是空字串则使用 -print 为预设 expression。</p>
+<p>expression 中可使用的选项有二三十个之多，在此只介绍最常用的部份。</p>
+<p>-o 连接符  即多次查询 </p>
+<p>find &#x2F;  -type f -name “<em>.config” -o -type f -name “</em>.txt” |grep “config”</p>
+<p>-mount, -xdev : 只检查和指定目录在同一个文件系统下的文件，避免列出其它文件系统中的文件</p>
+<p>-amin n : 在过去 n 分钟内被读取过</p>
+<p>-anewer file : 比文件 file 更晚被读取过的文件</p>
+<p>-atime n : 在过去n天内被读取过的文件</p>
+<p>-cmin n : 在过去 n 分钟内被修改过</p>
+<p>-cnewer file :比文件 file 更加新的文件</p>
+<p>-ctime n : 在过去n天内被修改过的文件</p>
+<p>-empty : 空的文件-gid n or -group name : gid 是 n 或是 group 名称是 name</p>
+<p>-ipath p, -path p : 路径名称符合 p 的文件，ipath 会忽略大小写</p>
+<p>-name name, -iname name : 文件名称符合 name 的文件，iname 会忽略大小写</p>
+<p>-size n : 文件大小 是 n 单位，b 代表 512 位元组的区块，c 表示字元数，k 表示 kilo bytes，w 是二个位元组。</p>
+<p>-type c : 文件类型是 c 的文件。</p>
+<p>-: 常规文件</p>
+<p>d: 目录</p>
+<p>c: 字符设备文件</p>
+<p>b: 块设备文件</p>
+<p>p: 管道文件</p>
+<p>l: 符号连结</p>
+<p>s: socket 套接字文件</p>
+<h4 id="实例一"><a href="#实例一" class="headerlink" title="实例一"></a>实例一</h4><p>将当前目录及其子目录下所有文件后缀为 .c 的文件列出来:</p>
+<p># find . -name “*.c”</p>
+<p>将当前目录及其子目录中的所有文件列出：</p>
+<p># find . -type f</p>
+<p>将当前目录及其子目录下所有最近 20 天内更新过的文件列出:</p>
+<p># find . -ctime -20</p>
+<p>查找 &#x2F;var&#x2F;log 目录中更改时间在 7 日以前的普通文件，并在删除之前询问它们：</p>
+<p># find &#x2F;var&#x2F;log -type f -mtime +7 -ok rm {} ;</p>
+<p>查找当前目录中文件属主具有读、写权限，并且文件所属组的用户和其他用户具有读权限的文件：</p>
+<p># find . -type f -perm 644 -exec ls -l {} ;</p>
+<p>查找系统中所有文件长度为 0 的普通文件，并列出它们的完整路径：</p>
+<p># find &#x2F; -type f -size 0 -exec ls -l {} ;</p>
+<h4 id="实例二"><a href="#实例二" class="headerlink" title="实例二"></a>实例二</h4><p>find &#x2F;etc&#x2F; -name passwd      ##查找&#x2F;etc&#x2F;下名称中带有passwd的文件</p>
+<p>find &#x2F;etc -maxdepth 1 -name passwd     ##查找&#x2F;etc&#x2F;下名称中带有passwd的文件，查找一层。</p>
+<p>find &#x2F;etc -name <em>.conf       ##查找&#x2F;etc&#x2F;下名称中带有</em>.conf的文件(下面显示的是部分)</p>
+<p>find &#x2F;etc -maxdepth 2 -name <em>.conf  ##查找&#x2F;etc&#x2F;下名称中带有</em>.conf的文件，且查找两层，包括一层（下面显示的是部分）</p>
+<p>find &#x2F;etc -maxdepth 2 -mindepth 2 -name <em>.conf  ##查找&#x2F;etc&#x2F;下名称中带有</em>.conf的文件，且只查找第二层</p>
+<p>find &#x2F;home -group jaking             ##查找&#x2F;home中所有组是jaking用户的文件</p>
+<p>find &#x2F;home -user jaking -group jaking  ##查找&#x2F;home中所有人和所有组都是jaking的文件</p>
+<p>find &#x2F;home -not -user jaking      ##查找&#x2F;home中所有人不是jaking用户的文件</p>
+<p>find &#x2F;home -not -user jaking -o -group cephadm   ##查找&#x2F;home中所有人不是jaking用户或者所有组是cephadm用户的文件</p>
+<p>find &#x2F;home -size 20K       ##查找&#x2F;home文件大小近似20k的文件</p>
+<p>find &#x2F;home -size +20K      ##查找&#x2F;home文件大小大于20k的文件</p>
+<p>find &#x2F;home -size -20K      ##查找&#x2F;home文件大小小于20k的文件</p>
+<p>find &#x2F;home -type d         ##按type查找&#x2F;home中目录</p>
+<p>find &#x2F;home -type f         ##按type查找&#x2F;home中文件</p>
+<p>find &#x2F;home -cmin 10        ##查找&#x2F;home中十分钟左右修改的</p>
+<p>find &#x2F;home -cmin +10       ##查找&#x2F;home中十分钟以上修改的</p>
+<p>find &#x2F;home -cmin -10       ##查找&#x2F;home中十分钟以内修改的</p>
+<p>find &#x2F;home -ctime 10       ##查找&#x2F;home中十天左右修改的</p>
+<p>find &#x2F;home -ctime +10      ##查找&#x2F;home中十天以上修改的</p>
+<p>find &#x2F;home -ctime -10      ##查找&#x2F;home中十天以内修改的</p>
+<p>find &#x2F;home&#x2F; -perm 444      ##查找&#x2F;home文件权限为444的文件</p>
+<p>find &#x2F;home&#x2F; -perm -444     ##查找&#x2F;home中user有读的权限且group有读的权限且other有读的权限的文件。（三个条件，u.g.o至少要读的权限即r–r–r–）</p>
+<p>find &#x2F;home&#x2F; -perm -004     ##查找&#x2F;home中other有读权限的文件（一个条件,o至少有读的权限）</p>
+<p>find &#x2F;home&#x2F; -perm -644     ##查找&#x2F;home中user有读写的权限且group至少有读权限且other有读的权限的文件。（四个条件,rw-r–r–）</p>
+<p>find &#x2F;etc&#x2F; -name *.conf -exec cp -rp {} &#x2F;tmp ;   ##把&#x2F;etc&#x2F;目录下名称中带有.conf的文件递归复制到&#x2F;home下</p>
+<p>find &#x2F;tmp -name “*.conf” -exec rm -rf {} ; ##删除&#x2F;home名称中带有.conf的文件</p>
+<p>find &#x2F; -group mail -exec cp -rp {} &#x2F;tmp ; ##把&#x2F;目录下的组属于mail的文件复制到&#x2F;tmp</p>
+<h3 id="chattr命令"><a href="#chattr命令" class="headerlink" title="chattr命令"></a>chattr命令</h3><h4 id="格式"><a href="#格式" class="headerlink" title="格式:"></a>格式:</h4><figure class="highlight css"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><code class="hljs css">chattr <span class="hljs-selector-attr">[-RV]</span><span class="hljs-selector-attr">[-v&lt;版本编号&gt;]</span><span class="hljs-selector-attr">[+/-/=&lt;属性&gt;]</span><span class="hljs-selector-attr">[文件或目录...]</span><br></code></pre></td></tr></table></figure>
+
+<h4 id="OPTIONS-选项"><a href="#OPTIONS-选项" class="headerlink" title="OPTIONS(选项)"></a>OPTIONS(选项)</h4><pre><code class="hljs">-V     详尽地给出chattr的输出信息并打印出程序的版本.
+-R    递归地修改目录以及其下内容的属性.如果在递归目录时遇到了符号链接,遍历将跳过.
+-v version  设置文件系统的版本.
+</code></pre>
+<p>​<br>​    设置了’i’属性的文件不能进行修改:你既不能删除它,<br>​           也不能给它重新命名,你不能对该文件创建链接,<br>​           而且也不能对该文件写入任何数据.  只有超级用户可以设置或清除该属性.<br>​<br>​     示例:<br>​<br>​    chattr +i 1.txt<br>​<br>​    rm -rf 1.txt<br>​<br>​    rm: 无法删除”1.txt”: 不允许的操作 (+i表示不允许任意更动文件或目录,-i是解除+i参数的锁定)</p>
+<p>​<br>​    </p>
+<h3 id="grep命令"><a href="#grep命令" class="headerlink" title="grep命令"></a>grep命令</h3><p>用于筛选查询结果</p>
+<h4 id="格式-1"><a href="#格式-1" class="headerlink" title="格式:"></a>格式:</h4><p> grep [option] pattern file</p>
+<p>-o：仅显示匹配到的字符串</p>
+<p>-v：显示不被pattern 匹配到的行，相当于[^] 反向匹配</p>
+<p> -i:   忽略字符大小写的差别。</p>
+<h4 id="正则表达式"><a href="#正则表达式" class="headerlink" title="正则表达式"></a>正则表达式</h4><h5 id="匹配字符"><a href="#匹配字符" class="headerlink" title="匹配字符"></a>匹配字符</h5><ul>
+<li><p>. 匹配任意单个字符，不能匹配空行</p>
+</li>
+<li><p>[] 匹配指定范围内的任意单个字符</p>
+</li>
+<li><p>[^] 取反 • [:alnum:] 或 [0-9a-zA-Z] </p>
+</li>
+<li><p>[:alpha:] 或 [a-zA-Z] • [:upper:] 或 [A-Z] </p>
+</li>
+<li><p>[:lower:] 或 [a-z] • [:blank:] 空白字符（空格和制表符）</p>
+</li>
+<li><p>[:space:] 水平和垂直的空白字符（比[:blank:]包含的范围广）</p>
+</li>
+<li><p>[:cntrl:] 不可打印的控制字符（退格、删除、警铃…）</p>
+</li>
+<li><p>[:digit:] 十进制数字 或[0-9] </p>
+</li>
+<li><p>[:xdigit:]十六进制数字 </p>
+</li>
+<li><p>[:graph:] 可打印的非空白字符 </p>
+</li>
+<li><p>[:print:] 可打印字符 </p>
+</li>
+<li><p>[:punct:] 标点符号</p>
+</li>
+</ul>
+<h5 id="匹配次数"><a href="#匹配次数" class="headerlink" title="匹配次数"></a>匹配次数</h5><p>格式</p>
+<ul>
+<li><p>匹配前面的字符任意次，包括0次，贪婪模式：尽可能长的匹配 </p>
+</li>
+<li><p>.* 任意长度的任意字符，包括0次</p>
+</li>
+<li><p>{n} 匹配前面的字符n次 </p>
+</li>
+<li><p>{m,n} 匹配前面的字符至少m 次，至多n次</p>
+</li>
+</ul>
+<p> 位置锚定：定位出现的位置</p>
+<p>格式</p>
+<ul>
+<li>^ 行首锚定，用于模式的最左侧 </li>
+<li>$ 行尾锚定，用于模式的最右侧</li>
+</ul>
+<h3 id="awk"><a href="#awk" class="headerlink" title="awk"></a>awk</h3><p>awk是一种编程语言，用于在linux&#x2F;unix下对文本和数据进行处理。数据可以来自标准输入(stdin)、一个或多个文件，或其它命令的输出。它支 持用户自定义函数和动态正则表达式等先进功能，是linux&#x2F;unix下的一个强大编程工具。它在命令行中使用，但更多是作为脚本来使用。</p>
+<h4 id="格式-2"><a href="#格式-2" class="headerlink" title="格式:"></a>格式:</h4><ul>
+<li>FS ：输入字段分隔符，默认为空白字符 </li>
+<li>OFS ：输出字段分隔符，默认为空白字符 </li>
+<li>RS ：输入记录分隔符，指定输入时的换行符，原换行符仍有效</li>
+<li>ORS ：输出记录分隔符，输出时用指定符号代替换行符 </li>
+<li>NF ：字段数量，共有多少字段， $NF引用最后一列，$(NF-1)引用倒数第2列</li>
+</ul>
+<h4 id="示例"><a href="#示例" class="headerlink" title="示例:"></a>示例:</h4><figure class="highlight awk"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><code class="hljs awk">awk -F: <span class="hljs-string">&#x27;&#123;print $1&#125;&#x27;</span> <span class="hljs-regexp">/etc/</span>passwd<br></code></pre></td></tr></table></figure>
+
+
+
+<h3 id="firewall-cmd"><a href="#firewall-cmd" class="headerlink" title="firewall-cmd"></a>firewall-cmd</h3><h4 id="区域"><a href="#区域" class="headerlink" title="区域"></a>区域</h4><p>概念 firewalld将网卡对应到不同的区域（zone），zone 默认共有9个，block dmz drop external home internal public trusted work. </p>
+<p>不同的区域之间的差异是其对待数据包的默认行为不同，根据区域名字我们可以很直观的知道该区域的 特征，在CentOS7系统中，默认区域被设置为public.</p>
+<figure class="highlight kotlin"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><code class="hljs kotlin">[<span class="hljs-symbol">root@</span>CGW4700 ~]$ firewall-cmd --<span class="hljs-keyword">get</span>-zones work drop <span class="hljs-keyword">internal</span> <span class="hljs-keyword">external</span> trusted home dmz <span class="hljs-keyword">public</span> block <span class="hljs-comment">// firewalld的所有区域</span><br></code></pre></td></tr></table></figure>
+
+<figure class="highlight csharp"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><code class="hljs csharp">[<span class="hljs-meta">root@CGW4700 ~</span>]$ firewall-cmd --<span class="hljs-keyword">get</span>-<span class="hljs-literal">default</span>-zone <span class="hljs-keyword">public</span> <span class="hljs-comment">// 默认的</span><br></code></pre></td></tr></table></figure>
+
+
+
+<h4 id="常用命令"><a href="#常用命令" class="headerlink" title="常用命令"></a>常用命令</h4><figure class="highlight dsconfig"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br></pre></td><td class="code"><pre><code class="hljs dsconfig">放行端口:<br><br><span class="hljs-string">firewall-cmd</span> <span class="hljs-built_in">--add-port=??/???</span>  <span class="hljs-built_in">--permanet</span>     <br><br><span class="hljs-comment">#??为端口号 ???为协议类型,例如tcp,udp</span><br><br><span class="hljs-string">firewall-cmd</span> <span class="hljs-built_in">--reload</span> <span class="hljs-comment">#重载</span><br></code></pre></td></tr></table></figure>
+
+
+
+<figure class="highlight crystal"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><code class="hljs crystal">[root<span class="hljs-variable">@CGW4700</span> ~]<span class="hljs-variable">$ </span>systemctl start firewalld.service  <span class="hljs-comment">#开启防火墙</span><br></code></pre></td></tr></table></figure>
+
+
+
+<figure class="highlight crystal"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><code class="hljs crystal">[root<span class="hljs-variable">@CGW4700</span> ~]<span class="hljs-variable">$ </span>systemctl enable firewalld.service  <span class="hljs-comment">#把firewalld加入到系统服务中</span><br></code></pre></td></tr></table></figure>
+
+
+
+<figure class="highlight crystal"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><code class="hljs crystal">[root<span class="hljs-variable">@CGW4700</span> ~]<span class="hljs-variable">$ </span>systemctl disable firewalld.service  <span class="hljs-comment">#把firewalld从系统服务中移除</span><br></code></pre></td></tr></table></figure>
+
+
+
+<figure class="highlight crystal"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><code class="hljs crystal">[root<span class="hljs-variable">@CGW4700</span> ~]<span class="hljs-variable">$ </span>systemctl status firewalld.service <span class="hljs-comment">#查看防火墙状态</span><br></code></pre></td></tr></table></figure>
+
+
+
+<figure class="highlight crystal"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><code class="hljs crystal">[root<span class="hljs-variable">@CGW4700</span> ~]<span class="hljs-variable">$ </span>firewall-cmd --state <span class="hljs-comment"># 查看防火墙状态(其二)</span><br></code></pre></td></tr></table></figure>
+
+
+
+<p>假设自定义的ssh端口为12222，使用下面的命令动态添加一条防火墙规则 </p>
+<p># 使用–permanent参数配置的规则，会添加到zone配置文件中，未指定则默认 </p>
+<figure class="highlight stylus"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><code class="hljs stylus"><span class="hljs-selector-attr">[root@CGW4700 ~]</span>$ firewall-cmd <span class="hljs-attr">--add-port</span>=<span class="hljs-number">12222</span>/tcp <span class="hljs-attr">--permanent</span><br></code></pre></td></tr></table></figure>
+
+<p> 防火墙的配置文件也可以手动修改，修改后记得重载 # 重读防火墙，并不中断用户连接，即不丢失状态信息 </p>
+<figure class="highlight crystal"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><code class="hljs crystal">[root<span class="hljs-variable">@CGW4700</span> ~]<span class="hljs-variable">$ </span>firewall-cmd --reload<br></code></pre></td></tr></table></figure>
+
+
+
+<figure class="highlight brainfuck"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><code class="hljs brainfuck"><span class="hljs-comment">启用???服务</span><br><span class="hljs-comment">firewall</span><span class="hljs-literal">-</span><span class="hljs-comment">cmd</span> <span class="hljs-literal">--</span><span class="hljs-comment">add</span><span class="hljs-literal">-</span><span class="hljs-comment">service=???</span> <span class="hljs-literal">--</span><span class="hljs-comment">permanet</span><br><br><span class="hljs-comment">firewall</span><span class="hljs-literal">-</span><span class="hljs-comment">cmd</span> <span class="hljs-literal">--</span><span class="hljs-comment">reload</span><br></code></pre></td></tr></table></figure>
+
+
+
+<h3 id="tar命令"><a href="#tar命令" class="headerlink" title="tar命令"></a>tar命令</h3><h4 id="压缩文件"><a href="#压缩文件" class="headerlink" title="压缩文件"></a>压缩文件</h4><p>tar -cvf 用户自定义的压缩文件名 想要压缩的文件或目录 -C 存放压缩文件的位置</p>
+<p>示例:</p>
+<figure class="highlight awk"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><code class="hljs awk">tar -cvf user.tar.gz <span class="hljs-regexp">/home/m</span>aster<span class="hljs-regexp">/ -C /</span>home<br></code></pre></td></tr></table></figure>
+
+
+
+<h4 id="解压文件"><a href="#解压文件" class="headerlink" title="解压文件"></a>解压文件</h4><p>tar -xvf </p>
+<p>示例:</p>
+<figure class="highlight awk"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><code class="hljs awk">tar xvf <span class="hljs-regexp">/home/u</span>ser.tar.gz<br></code></pre></td></tr></table></figure>
+
+
+
+<h4 id="zip命令"><a href="#zip命令" class="headerlink" title="zip命令"></a>zip命令</h4><p>zip是压缩工具，unzip是解压工具 </p>
+<figure class="highlight diff"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><code class="hljs diff"><span class="hljs-deletion">-q：不显示指令执行过程；</span><br><br><span class="hljs-deletion">-r：递归处理，将指定目录下的所有文件和子目录一并处理；</span><br></code></pre></td></tr></table></figure>
+
+<p>路径和参数与tar命令的位置相同</p>
+<h3 id="touch命令"><a href="#touch命令" class="headerlink" title="touch命令"></a>touch命令</h3><figure class="highlight awk"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><code class="hljs awk"><span class="hljs-comment">#创建隐藏文件</span><br><br>touch  <span class="hljs-regexp">/home/</span>admin/.<span class="hljs-number">1</span>.txt <br><br>touch  <span class="hljs-regexp">/home/</span>admin/..<span class="hljs-number">1</span>.txt <br></code></pre></td></tr></table></figure>
+
+
+
+<p>touch -acmr 文件2 文件1</p>
+<p>文件2的mtime ,atime会变成文件1的    (修改系统时间会影响文件的ctime )</p>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><code class="hljs bash"><span class="hljs-comment">#创建文件</span><br><span class="hljs-built_in">touch</span> [路径]文件名 <br></code></pre></td></tr></table></figure>
+
+
+
+<h3 id="netstat命令"><a href="#netstat命令" class="headerlink" title="netstat命令"></a>netstat命令</h3><figure class="highlight"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><code class="hljs">查看服务器开放了哪些端口<br><br>netstat -anp<br></code></pre></td></tr></table></figure>
+
+
+                
+              </div>
+            
+            <hr/>
+            <div>
+              <div class="post-metas my-3">
+  
+  
+    <div class="post-meta">
+      <i class="iconfont icon-tags"></i>
+      
+        <a href="/tags/Linux/">#Linux</a>
+      
+    </div>
+  
+</div>
+
+
+              
+  
+
+  <div class="license-box my-3">
+    <div class="license-title">
+      <div>linux常用命令汇总</div>
+      <div>http://example.com/2022/06/10/linux/</div>
+    </div>
+    <div class="license-meta">
+      
+        <div class="license-meta-item">
+          <div>作者</div>
+          <div>Ju Huang</div>
+        </div>
+      
+      
+        <div class="license-meta-item license-meta-date">
+          <div>发布于</div>
+          <div>2022年6月10日</div>
+        </div>
+      
+      
+      
+        <div class="license-meta-item">
+          <div>许可协议</div>
+          <div>
+            
+              
+              
+                <a target="_blank" href="https://creativecommons.org/licenses/by/4.0/">
+                  <span class="hint--top hint--rounded" aria-label="BY - 署名">
+                    <i class="iconfont icon-by"></i>
+                  </span>
+                </a>
+              
+            
+          </div>
+        </div>
+      
+    </div>
+    <div class="license-icon iconfont"></div>
+  </div>
+
+
+
+              
+                <div class="post-prevnext my-3">
+                  <article class="post-prev col-6">
+                    
+                    
+                      <a href="/2022/08/19/link./" title="用Java实现链表结构">
+                        <i class="iconfont icon-arrowleft"></i>
+                        <span class="hidden-mobile">用Java实现链表结构</span>
+                        <span class="visible-mobile">上一篇</span>
+                      </a>
+                    
+                  </article>
+                  <article class="post-next col-6">
+                    
+                    
+                  </article>
+                </div>
+              
+            </div>
+
+            
+          </article>
+        </div>
+      </div>
+    </div>
+
+    <div class="side-col d-none d-lg-block col-lg-2">
+      
+  <aside class="sidebar" style="margin-left: -1rem">
+    <div id="toc">
+  <p class="toc-header">
+    <i class="iconfont icon-list"></i>
+    <span>目录</span>
+  </p>
+  <div class="toc-body" id="toc-body"></div>
+</div>
+
+
+
+  </aside>
+
+
+    </div>
+  </div>
+</div>
+
+
+
+
+
+  
+
+
+
+  
+
+
+
+  
+
+
+
+  
+
+
+
+  
+
+
+
+
+
+
+
+    
+
+    
+      <a id="scroll-top-button" aria-label="TOP" href="#" role="button">
+        <i class="iconfont icon-arrowup" aria-hidden="true"></i>
+      </a>
+    
+
+    
+      <div class="modal fade" id="modalSearch" tabindex="-1" role="dialog" aria-labelledby="ModalLabel"
+     aria-hidden="true">
+  <div class="modal-dialog modal-dialog-scrollable modal-lg" role="document">
+    <div class="modal-content">
+      <div class="modal-header text-center">
+        <h4 class="modal-title w-100 font-weight-bold">搜索</h4>
+        <button type="button" id="local-search-close" class="close" data-dismiss="modal" aria-label="Close">
+          <span aria-hidden="true">&times;</span>
+        </button>
+      </div>
+      <div class="modal-body mx-3">
+        <div class="md-form mb-5">
+          <input type="text" id="local-search-input" class="form-control validate">
+          <label data-error="x" data-success="v" for="local-search-input">关键词</label>
+        </div>
+        <div class="list-group" id="local-search-result"></div>
+      </div>
+    </div>
+  </div>
+</div>
+
+    
+
+    
+  </main>
+
+  <footer>
+    <div class="footer-inner">
+  
+    <div class="footer-content">
+       <i class="iconfont icon-love"></i> 
+    </div>
+  
+  
+  
+  
+</div>
+
+  </footer>
+
+  <!-- Scripts -->
+  
+  <script  src="https://lib.baomitu.com/nprogress/0.2.0/nprogress.min.js" ></script>
+  <link  rel="stylesheet" href="https://lib.baomitu.com/nprogress/0.2.0/nprogress.min.css" />
+
+  <script>
+    NProgress.configure({"showSpinner":false,"trickleSpeed":100})
+    NProgress.start()
+    window.addEventListener('load', function() {
+      NProgress.done();
+    })
+  </script>
+
+
+<script  src="https://lib.baomitu.com/jquery/3.6.0/jquery.min.js" ></script>
+<script  src="https://lib.baomitu.com/twitter-bootstrap/4.6.1/js/bootstrap.min.js" ></script>
+<script  src="/js/events.js" ></script>
+<script  src="/js/plugins.js" ></script>
+
+
+  <script  src="https://lib.baomitu.com/typed.js/2.0.12/typed.min.js" ></script>
+  <script>
+    (function (window, document) {
+      var typing = Fluid.plugins.typing;
+      var subtitle = document.getElementById('subtitle');
+      if (!subtitle || !typing) {
+        return;
+      }
+      var text = subtitle.getAttribute('data-typed-text');
+      
+        typing(text);
+      
+    })(window, document);
+  </script>
+
+
+
+
+  
+    <script  src="/js/img-lazyload.js" ></script>
+  
+
+
+
+
+  
+<script>
+  Fluid.utils.createScript('https://lib.baomitu.com/tocbot/4.18.2/tocbot.min.js', function() {
+    var toc = jQuery('#toc');
+    if (toc.length === 0 || !window.tocbot) { return; }
+    var boardCtn = jQuery('#board-ctn');
+    var boardTop = boardCtn.offset().top;
+
+    window.tocbot.init(Object.assign({
+      tocSelector     : '#toc-body',
+      contentSelector : '.markdown-body',
+      linkClass       : 'tocbot-link',
+      activeLinkClass : 'tocbot-active-link',
+      listClass       : 'tocbot-list',
+      isCollapsedClass: 'tocbot-is-collapsed',
+      collapsibleClass: 'tocbot-is-collapsible',
+      scrollSmooth    : true,
+      includeTitleTags: true,
+      headingsOffset  : -boardTop,
+    }, CONFIG.toc));
+    if (toc.find('.toc-list-item').length > 0) {
+      toc.css('visibility', 'visible');
+    }
+
+    Fluid.events.registerRefreshCallback(function() {
+      if ('tocbot' in window) {
+        tocbot.refresh();
+        var toc = jQuery('#toc');
+        if (toc.length === 0 || !tocbot) {
+          return;
+        }
+        if (toc.find('.toc-list-item').length > 0) {
+          toc.css('visibility', 'visible');
+        }
+      }
+    });
+  });
+</script>
+
+
+  <script src=https://lib.baomitu.com/clipboard.js/2.0.11/clipboard.min.js></script>
+
+  <script>Fluid.plugins.codeWidget();</script>
+
+
+  
+<script>
+  Fluid.utils.createScript('https://lib.baomitu.com/anchor-js/4.3.1/anchor.min.js', function() {
+    window.anchors.options = {
+      placement: CONFIG.anchorjs.placement,
+      visible  : CONFIG.anchorjs.visible
+    };
+    if (CONFIG.anchorjs.icon) {
+      window.anchors.options.icon = CONFIG.anchorjs.icon;
+    }
+    var el = (CONFIG.anchorjs.element || 'h1,h2,h3,h4,h5,h6').split(',');
+    var res = [];
+    for (var item of el) {
+      res.push('.markdown-body > ' + item.trim());
+    }
+    if (CONFIG.anchorjs.placement === 'left') {
+      window.anchors.options.class = 'anchorjs-link-left';
+    }
+    window.anchors.add(res.join(', '));
+
+    Fluid.events.registerRefreshCallback(function() {
+      if ('anchors' in window) {
+        anchors.removeAll();
+        var el = (CONFIG.anchorjs.element || 'h1,h2,h3,h4,h5,h6').split(',');
+        var res = [];
+        for (var item of el) {
+          res.push('.markdown-body > ' + item.trim());
+        }
+        if (CONFIG.anchorjs.placement === 'left') {
+          anchors.options.class = 'anchorjs-link-left';
+        }
+        anchors.add(res.join(', '));
+      }
+    });
+  });
+</script>
+
+
+  
+<script>
+  Fluid.utils.createScript('https://lib.baomitu.com/fancybox/3.5.7/jquery.fancybox.min.js', function() {
+    Fluid.plugins.fancyBox();
+  });
+</script>
+
+
+  <script>Fluid.plugins.imageCaption();</script>
+
+  <script  src="/js/local-search.js" ></script>
+
+
+
+
+
+<!-- 主题的启动项，将它保持在最底部 -->
+<!-- the boot of the theme, keep it at the bottom -->
+<script  src="/js/boot.js" ></script>
+
+
+  
+
+  <noscript>
+    <div class="noscript-warning">博客在允许 JavaScript 运行的环境下浏览效果更佳</div>
+  </noscript>
+</body>
+</html>
